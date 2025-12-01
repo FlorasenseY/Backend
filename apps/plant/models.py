@@ -1,5 +1,4 @@
 from django.db import models
-from apps.user.models import UserModel
 
 class CategoryModel(models.Model):
     class Meta:
@@ -29,6 +28,6 @@ class PlantModel(models.Model):
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_default = models.BooleanField(default=False)
-    owner = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name="plant")
+    owner = models.ForeignKey("user.UserModel", on_delete=models.CASCADE, related_name="plant")
 
 

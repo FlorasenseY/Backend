@@ -21,7 +21,7 @@ class CreateListPlantApi(ListCreateAPIView):
 )
         return queryset
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer) -> None:
         serializer.save(owner=self.request.user)
 
 class RetrieveUpdateDestroyPlantApi(RetrieveUpdateDestroyAPIView):
@@ -43,7 +43,7 @@ class RetrieveUpdateDestroyCategoryApi(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsSuperUser, )
     queryset = CategoryModel.objects.all()
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance) -> None:
         try:
             instance.delete()
         except:

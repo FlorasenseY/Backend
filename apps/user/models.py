@@ -13,6 +13,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_block = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    container = models.OneToOneField('esp.EspContainerEspModel', on_delete=models.CASCADE, related_name='user')
     USERNAME_FIELD = "username"
     objects = UserManager()
 

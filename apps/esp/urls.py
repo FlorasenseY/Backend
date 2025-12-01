@@ -1,8 +1,6 @@
 from django.urls import path
-from .views import buzzer_off, buzzer_on, CreateBaseEspContainerApi
-
+from .views import SetPlantByContainerApi, UpdateUserParamsApi
 urlpatterns = [
-    path('buzzerOff/', buzzer_off),
-    path('buzzerOn/', buzzer_on),
-    path('set_container/<int:pk>/', CreateBaseEspContainerApi.as_view())
+    path('set_plant/<int:pk>/', SetPlantByContainerApi.as_view()),
+    path('params/', UpdateUserParamsApi.as_view())
 ]

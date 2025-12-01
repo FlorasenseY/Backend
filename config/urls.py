@@ -25,7 +25,6 @@ urlpatterns = [
     path('api/plants/', include('apps.plant.urls')),
     path('api/device/', include('apps.user.urls')),
     path('api/auth/', include("apps.auth.urls")),
-    path('api/container/', include("apps.container.urls"))
 ]
 
 urlpatterns += static(MEDIA_URL, document_root=settings.MEDIA_ROOT)

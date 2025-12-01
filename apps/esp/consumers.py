@@ -1,30 +1,53 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
+from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
+from channels.db import database_sync_to_async
+from core.dataclass import UserDataClass
+from .serializers import SensorDeviceEspSerializer
 import json
+from .models import SensorDeviceModel
 
-class ESPConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.group_name = "esp_group"
+class ESPConsumer(GenericAsyncAPIConsumer):
+    async def connect(self) -> None:
+        self.user:UserDataClass = self.scope['user']
+        if not self.scope['user']:
+            return await self.close()
+        await self.accept()
+        self.group_name = self.user.username
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name
         )
+        await self.send_json({"detail":f"Connect device {self.user.username} success"})
 
-        await self.accept()
-        print("Connected")
 
 
     async def disconnect(self, code):
-        print("Disconnected")
+        await self.channel_layer.group_discard(self.group_name)
 
 
-    async def receive(self, text_data = None, bytes_data = None):
-        data = json.loads(text_data)
-        print("Receive data", data)
-        await self.send(json.dumps({"status": "ok", "received": data}))
+    async def receive(self, text_data):
+        try:
+            data = json.loads(text_data)
+            if not data.get('esp'):
+                return
+            data = data.pop('esp')
+        except:
+            await self.send_json({"detail":"Invalid data"})
+            return
+        serializer = SensorDeviceEspSerializer(data=data)
+        if not serializer.is_valid():
+            await self.send_json({"detail": serializer.errors})
+            return
 
-    async def send_command(self, event):
-        command = event['command']
-        print(f"Sending command: {command}")
-        await self.send(text_data=json.dumps({"command": command}))
+        await self.change_current_value(data)
 
 
+
+    async def user_params(self, event):
+        await self.send_json({"backend":event["data"]})
+
+    @database_sync_to_async
+    def change_current_value(self,data):
+        sensor = self.user.container.sensor
+        for key,value in data.items():
+            setattr(sensor,key, value)
+        sensor.save()
