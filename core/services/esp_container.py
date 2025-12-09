@@ -17,4 +17,5 @@ def set_params(container:EspContainerDataClass, plant:PlantDataClass):
     container.user_params.need_ground_humidity = character_plant.ground_humidity
     container.user_params.need_light = character_plant.light
     container.user_params.need_temp = character_plant.temp
+    container.save()
     return container

@@ -4,7 +4,7 @@ from core.dataclass import UserDataClass
 from .serializers import SensorDeviceEspSerializer
 import json
 from .models import SensorDeviceModel
-
+from .serializers import UserParamsSerializer
 class ESPConsumer(GenericAsyncAPIConsumer):
     async def connect(self) -> None:
         self.user:UserDataClass = self.scope['user']
@@ -16,8 +16,9 @@ class ESPConsumer(GenericAsyncAPIConsumer):
             self.group_name,
             self.channel_name
         )
+        user_params = await self.get_data()
         await self.send_json({"detail":f"Connect device {self.user.username} success"})
-
+        await self.send_json({"backend":user_params})
 
 
     async def disconnect(self, code):
@@ -44,6 +45,12 @@ class ESPConsumer(GenericAsyncAPIConsumer):
 
     async def user_params(self, event):
         await self.send_json({"backend":event["data"]})
+
+    @database_sync_to_async
+    def get_data(self):
+        user_params = self.user.container.user_params
+        serializer = UserParamsSerializer(user_params)
+        return serializer.data
 
     @database_sync_to_async
     def change_current_value(self,data):

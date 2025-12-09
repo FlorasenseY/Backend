@@ -33,6 +33,7 @@ class SetPlantByContainerApi(GenericAPIView):
 
 
 
+
 class UpdateUserParamsApi(UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserParamsSerializer
