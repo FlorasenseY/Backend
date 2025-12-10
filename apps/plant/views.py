@@ -37,6 +37,7 @@ class CreateListCategoryApi(ListCreateAPIView):
     queryset = CategoryModel.objects.all()
     filterset_class = CategoryFilter
     permission_classes = (IsSuperUser,)
+    pagination_class = None
 
 class RetrieveUpdateDestroyCategoryApi(RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer

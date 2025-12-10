@@ -29,6 +29,7 @@ class SetPlantByContainerApi(GenericAPIView):
         container.plant = plant
         container = set_params(container, plant)
         container.save()
+
         return Response(EspContainerSerializer(container).data, status=status.HTTP_200_OK)
 
 
