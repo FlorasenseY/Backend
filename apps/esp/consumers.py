@@ -5,6 +5,8 @@ from .serializers import SensorDeviceEspSerializer
 import json
 from .models import SensorDeviceModel
 from .serializers import UserParamsSerializer
+
+
 class ESPConsumer(GenericAsyncAPIConsumer):
     async def connect(self) -> None:
         self.user:UserDataClass = self.scope['user']
@@ -38,10 +40,18 @@ class ESPConsumer(GenericAsyncAPIConsumer):
         if not serializer.is_valid():
             await self.send_json({"detail": serializer.errors})
             return
-
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type":'sender',
+                "data":{"esp":data}
+            }
+        )
         await self.change_current_value(data)
 
 
+    async def sender(self,event):
+        await self.send_json(event['data'])
 
     async def user_params(self, event):
         await self.send_json({"backend":event["data"]})
